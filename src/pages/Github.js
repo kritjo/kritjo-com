@@ -1,10 +1,11 @@
 import React, {useState, useEffect} from "react";
 import axios from "axios";
-import GhCarousel from "../components/carousel";
+import Carousel from "../components/carousel";
+import ErrorBoundary from "../components/errorBoundary"
 
 const Github = () => {
-    const [loading, setLoading] = useState(false);
-    const [repos, setRepos] = useState([])
+    const [loading, setLoading] = useState(true);
+    const [cards, setCards] = useState([])
 
     useEffect(() => {
         const loadRepo = async () => {
@@ -14,11 +15,21 @@ const Github = () => {
                 "https://api.github.com/users/kritjo/subscriptions"
             );
 
-            setRepos(response.data)
+            //setCards(response.data)
             setLoading(false);
+            return response
         }
-
-        loadRepo();
+        loadRepo().then(value => {
+            setCards(value.data.map((ghitem) => {
+                return {
+                    title: ghitem.name,
+                    description: ghitem.description,
+                    url: ghitem.html_url
+                }
+            }));
+        }).catch(reason => {
+            console.log("Error" + reason);
+        });
     }, []);
 
     return (
@@ -26,7 +37,11 @@ const Github = () => {
             {loading ? (
                 <p>Loading...</p>
             ) : (
-                <GhCarousel repos={repos} />
+                <div style={{marginTop: '3rem'}}>
+                    <ErrorBoundary>
+                        <Carousel cards={cards} />
+                    </ErrorBoundary>
+                </div>
             )
             }
         </div>

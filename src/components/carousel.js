@@ -1,55 +1,60 @@
-import React, { Component } from "react";
-import ReactCardCarousel from "react-card-carousel";
+import {useEffect, useState} from "react";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faChevronLeft, faChevronRight} from "@fortawesome/free-solid-svg-icons";
 
-class GhCarousel extends Component {
 
-    static get CONTAINER_STYLE() {
-        return {
-            position: "relative",
-            height: "50vh",
-            width: "100%",
-            display: "flex",
-            flex: 1,
-            justifyContent: "center",
-            alignItems: "middle"
-        };
-    }
+const Carousel = (props) => {
+    const [index, setIndex] = useState(0)
+    useEffect(() => {
+        setIndex(0);
+    }, []);
 
-    static get CARD_STYLE() {
-        return {
-            height: "200px",
-            width: "400px",
-            paddingTop: "10px",
-            paddingLeft: "10px",
-            paddingRight: "10px",
-            paddingBottom: "10px",
-            textAlign: "center",
-            background: "#52C0F5",
-            color: "#FFF",
-            fontFamily: "sans-serif",
-            fontSize: "12px",
-            textTransform: "uppercase",
-            borderRadius: "10px",
-            boxSizing: "border-box"
-        };
-    }
+    const slideLeft = () => {
+        if (index > 0) {
+            setIndex(index - 1);
+        } else {
+            setIndex(props.cards.length - 1);
+        }
+    };
 
-    render() {
-        return (
-            <div style={GhCarousel.CONTAINER_STYLE}>
-                <ReactCardCarousel autoplay={false} autoplay_speed={5000}>
-                    {this.props.repos.map ((repo) =>
-                        <div style={GhCarousel.CARD_STYLE}>
-                            <h2>{repo.name}</h2>
-                            <p>{repo.description}</p>
-                            <a href={repo.html_url}>{repo.html_url} <i className="fa fa-external-link"></i>
-                            </a>
+    const slideRight = () => {
+        if (index < props.cards.length - 1) {
+            setIndex(index + 1);
+        } else {
+            setIndex(0);
+        }
+    };
+    return (
+        <div>
+            <div className="container">
+                <div className="row align-items-center">
+                    <div className="col-sm">
+                        <FontAwesomeIcon
+                            onClick={slideLeft}
+                            className="leftBtn"
+                            icon={faChevronLeft}
+                        />
+                    </div>
+                    <div className="col-sm">
+                        <div className={'card text-white bg-primary mb-3'} style={{width: '36rem'}}>
+                            <div className={'card-body'}>
+                                <h5 className={'card-title'}>{props.cards[index].title}</h5>
+                                <p className={'card-text'}>{props.cards[index].description}</p>
+                                <a className={'card-link link-light'} href={props.cards[index].url}>{props.cards[index].url}</a>
+                            </div>
                         </div>
-                    )}
-                </ReactCardCarousel>
+                    </div>
+                    <div className="col-sm">
+                        <FontAwesomeIcon
+                            onClick={slideRight}
+                            className="rightBtn"
+                            icon={faChevronRight}
+                        />
+                    </div>
+                </div>
             </div>
-        );
-    }
+        </div>
+    );
 }
 
-export default GhCarousel;
+export default Carousel;
