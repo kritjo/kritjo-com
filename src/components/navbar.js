@@ -8,7 +8,7 @@ function Navbar() {
     };
     
     return (
-        <nav>
+        <nav className={"navbar"}>
             <ul>
                 <li>
                     <NavLink
