@@ -4,7 +4,7 @@ import Github from "./pages/Github";
 import React, {useState} from "react";
 import './App.css'
 import Navbar from "./components/navbar";
-import WeatherHistory from "./pages/WeatherHistory";
+import TemperatureHistory from "./pages/TemperatureHistory";
 
 function App() {
     const [title, setTitle] = useState("kritjo.com - Kristian Tjelta Johansen")
@@ -22,7 +22,7 @@ function App() {
                         <Github set_page_title={setTitle}/>
                     } />
                     <Route path={'/weather'} element={
-                        <WeatherHistory set_page_title={setTitle} />
+                        <TemperatureHistory set_page_title={setTitle} />
                     } />
                     </Routes>
                 </header>
