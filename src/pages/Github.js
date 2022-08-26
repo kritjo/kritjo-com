@@ -3,9 +3,13 @@ import axios from "axios";
 import Carousel from "../components/carousel";
 import ErrorBoundary from "../components/errorBoundary"
 
-const Github = () => {
+const Github = (props) => {
     const [loading, setLoading] = useState(true);
     const [cards, setCards] = useState([])
+
+    useEffect(() => {
+        props.set_page_title("")
+    })
 
     useEffect(() => {
         const loadRepo = async () => {

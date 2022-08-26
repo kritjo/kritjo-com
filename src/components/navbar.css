@@ -18,6 +18,10 @@ li a {
     text-decoration: none;
 }
 
+.navbar {
+    margin-bottom: 2rem;
+}
+
 /* Change the link color to #111 (black) on hover */
 li a:hover {
     background-color: #111;
