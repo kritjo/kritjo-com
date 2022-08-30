@@ -1,18 +1,14 @@
 const axios = require('axios');
 
-const CORS_PROXY = "https://cors-proxy-kritjo-com.herokuapp.com";
 const MET_TOKEN = process.env.MET_TOKEN;
 
 const getNearestSource = async (coordinates) => {
     const response = await axios.get(
-        CORS_PROXY + `/https://frost.met.no/sources/v0.jsonld`,
+        'https://frost.met.no/sources/v0.jsonld',
         {
             params: {
                 geometry: `nearest(POINT(${coordinates[0]} ${coordinates[1]}))`,
                 elements: "air_temperature",
-            },
-            headers: {
-                "Origin": "https://kritjo.com",
             },
             auth: {
                 username: MET_TOKEN,
@@ -29,15 +25,12 @@ const getNearestSource = async (coordinates) => {
 
 const getWeatherHistory = async (source, year) => {
     const response = await axios.get(
-        CORS_PROXY + `/https://frost.met.no/observations/v0.jsonld`,
+        'https://frost.met.no/observations/v0.jsonld',
         {
             params: {
                 sources: source,
                 referencetime: `${year}-01-01/${year}-12-31`,
                 elements: "air_temperature",
-            },
-            headers: {
-                "Origin": "https://kritjo.com",
             },
             auth: {
                 username: MET_TOKEN,
@@ -83,26 +76,27 @@ export default async function handler(request, response) {
             current_day = hour.referenceTime.split("T")[0];
             counted_current_day = false;
         }
+        let should_count = false;
         if (!counted_current_day) {
             if (temperature_type === '0') {
                 if (hour.observations[0].value > temperature) {
                     counted_current_day = true;
-                    return true;
+                    should_count = true;
                 }
             } else if (temperature_type === '1') {
                 if (hour.observations[0].value < temperature) {
                     counted_current_day = true;
-                    return true;
+                    should_count = true
                 }
             } else {
                 throw new Error("Invalid temperature type");
             }
-        } else {
-            return false;
         }
+        return should_count;
     }).length;
 
     response.status(200).json({
         days: days_temperature,
     });
+
 }
