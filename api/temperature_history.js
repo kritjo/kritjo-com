@@ -1,6 +1,7 @@
 const axios = require('axios');
 
 const CORS_PROXY = "https://cors-proxy-kritjo-com.herokuapp.com";
+const MET_TOKEN = process.env.MET_TOKEN;
 
 const getNearestSource = async (coordinates) => {
     const response = await axios.get(
@@ -11,9 +12,12 @@ const getNearestSource = async (coordinates) => {
                 elements: "air_temperature",
             },
             headers: {
-                "Authorization": "Basic ZTM2N2M3NzAtYWI4Yy00ODVmLTliY2QtYTIyNWNhMTY2N2NmOg==",
                 "Origin": "https://kritjo.com",
             },
+            auth: {
+                username: MET_TOKEN,
+                password: "",
+            }
         },
     ).catch(reason => {
         if (reason.response) {
@@ -33,9 +37,12 @@ const getWeatherHistory = async (source, year) => {
                 elements: "air_temperature",
             },
             headers: {
-                "Authorization": "Basic ZTM2N2M3NzAtYWI4Yy00ODVmLTliY2QtYTIyNWNhMTY2N2NmOg==",
                 "Origin": "https://kritjo.com",
             },
+            auth: {
+                username: MET_TOKEN,
+                password: "",
+            }
         },
     ).catch(reason => {
         if (reason.response) {

@@ -40,17 +40,11 @@ const TemperatureHistory = (props) => {
             case WeatherHistoryState.loading_places:
                 const loadPlaces = async () => {
                     setState(WeatherHistoryState.loading_places);
-
+                    console.log("Loading places");
                     const response = await axios.get(
-                        CORS_PROXY + "/https://frost.met.no/locations/v0.jsonld",
-                        {
-                            headers: {
-                                "Authorization": "Basic ZTM2N2M3NzAtYWI4Yy00ODVmLTliY2QtYTIyNWNhMTY2N2NmOg==",
-                            },
-                        },
+                        window.location.origin + "/api/places"
                     );
                     setState(WeatherHistoryState.loaded_places);
-                    console.log(response.data);
                     return response;
                 };
                 loadPlaces().then(value => {
@@ -67,7 +61,6 @@ const TemperatureHistory = (props) => {
             case WeatherHistoryState.loaded_places:
                 break;
             case WeatherHistoryState.loading_weather:
-                console.log("Loading weather for " + chosenPlace.value);
                 const loadWeather = async () => {
                     return await axios.get(
                         window.location.origin + "/api/temperature_history/", {
