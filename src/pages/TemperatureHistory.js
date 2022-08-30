@@ -30,7 +30,7 @@ const TemperatureHistory = (props) => {
 
     useEffect(() => {
         props.set_page_title("Weather history");
-    }, []);
+    }, [props]);
 
     // Handle loading weather state
     useEffect(() => {
@@ -64,8 +64,12 @@ const TemperatureHistory = (props) => {
                 break;
             case WeatherHistoryState.loaded_weather:
                 break;
+            case WeatherHistoryState.error:
+                break;
+            default:
+                throw new Error("Unknown state");
         }
-    }, [state]);
+    }, [places.length, state]);
 
     const handleSubmit = (event) => {
         event.preventDefault();
@@ -111,12 +115,12 @@ const TemperatureHistory = (props) => {
             <Form onSubmit={handleSubmit}>
                 <Select options={places} onChange={(value) => setChosenPlace(value)}
                         styles={{
-                            control: (provided, state) => ({
+                            control: (provided) => ({
                                 ...provided,
                                 boxShadow: "none",
                                 border: "none",
                             }),
-                            menu: (provided, state) => ({
+                            menu: (provided) => ({
                                 ...provided,
                                 border: "none",
                                 boxShadow: "none",
@@ -126,7 +130,6 @@ const TemperatureHistory = (props) => {
                                 backgroundColor: (state.isFocused) ? "lightgray" : "white",
                                 color: "black",
                             }),
-
                         }}
                 />
                 <InputGroup className={"mb-3"}
@@ -169,7 +172,13 @@ const TemperatureHistory = (props) => {
               <Alert key={"danger"} variant={"danger"}>
                   Error: {error}
               </Alert>
-              <Button variant={"primary"} onClick={() => setState(WeatherHistoryState.loading_places)}>
+              <Button variant={"primary"} onClick={() => {
+                    setChosenPlace("");
+                    setChosenYear(0);
+                    setChosenTemperature(0);
+                    setChosenTemperatureType(0);
+                    setState(WeatherHistoryState.loaded_places);
+              }}>
                   Reset
               </Button>
           </div>
