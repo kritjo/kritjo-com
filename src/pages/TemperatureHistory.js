@@ -5,8 +5,6 @@ import Select from "react-select";
 import qs from "qs";
 
 
-const CORS_PROXY = "https://cors-proxy-kritjo-com.herokuapp.com";
-
 const WeatherHistoryState = {
     loading_places: 0,
     loaded_places: 1,
@@ -38,51 +36,31 @@ const TemperatureHistory = (props) => {
     useEffect(() => {
         switch(state) {
             case WeatherHistoryState.loading_places:
-                const loadPlaces = async () => {
-                    setState(WeatherHistoryState.loading_places);
-                    console.log("Loading places");
-                    const response = await axios.get(
-                        window.location.origin + "/api/places"
-                    );
-                    setState(WeatherHistoryState.loaded_places);
-                    return response;
-                };
-                loadPlaces().then(value => {
-                    setPlaces(value.data.data.map((place) => {
-                        return {
-                            "label": `${place.name} (${place.geometry.coordinates[1]}, ${place.geometry.coordinates[0]})`,
-                            "value": place.geometry.coordinates,
-                        };
-                    }));
-                }).catch(reason => {
-                    console.log("Error" + reason);
-                });
+                if (places.length === 0) {
+                    const loadPlaces = async () => {
+                        setState(WeatherHistoryState.loading_places);
+                        const response = await axios.get(
+                            window.location.origin + "/api/places"
+                        );
+                        setState(WeatherHistoryState.loaded_places);
+                        return response;
+                    };
+                    loadPlaces().then(value => {
+                        setPlaces(value.data.data.map((place) => {
+                            return {
+                                "label": `${place.name} (${place.geometry.coordinates[1]}, ${place.geometry.coordinates[0]})`,
+                                "value": place.geometry.coordinates,
+                            };
+                        }));
+                    }).catch(reason => {
+                        setError(reason.response.data.reason);
+                        setState(WeatherHistoryState.error);
+                    });
+                }
                 break;
             case WeatherHistoryState.loaded_places:
                 break;
             case WeatherHistoryState.loading_weather:
-                const loadWeather = async () => {
-                    return await axios.get(
-                        window.location.origin + "/api/temperature_history/", {
-                            params: {
-                                coordinates: chosenPlace.value,
-                                year: chosenYear,
-                                temperature: chosenTemperature,
-                                temperature_type: chosenTemperatureType,
-                            },
-                            paramsSerializer: (params) => {
-                                return qs.stringify(params, {arrayFormat: "repeat"});
-                            }
-                        }
-                    )
-                };
-                loadWeather().then(value => {
-                    setDaysHistoric(value.data.days);
-                    setState(WeatherHistoryState.loaded_weather);
-                }).catch(reason => {
-                    setError(reason.response.data.reason);
-                    setState(WeatherHistoryState.error);
-                });
                 break;
             case WeatherHistoryState.loaded_weather:
                 break;
@@ -92,6 +70,28 @@ const TemperatureHistory = (props) => {
     const handleSubmit = (event) => {
         event.preventDefault();
         setState(WeatherHistoryState.loading_weather);
+        const loadWeather = async () => {
+            return await axios.get(
+                window.location.origin + "/api/temperature_history/", {
+                    params: {
+                        coordinates: chosenPlace.value,
+                        year: chosenYear,
+                        temperature: chosenTemperature,
+                        temperature_type: chosenTemperatureType,
+                    },
+                    paramsSerializer: (params) => {
+                        return qs.stringify(params, {arrayFormat: "repeat"});
+                    }
+                }
+            )
+        };
+        loadWeather().then(value => {
+            setDaysHistoric(value.data.days);
+            setState(WeatherHistoryState.loaded_weather);
+        }).catch(reason => {
+            setError(reason.response.data.reason);
+            setState(WeatherHistoryState.error);
+        });
     }
 
     return (
