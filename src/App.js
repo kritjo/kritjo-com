@@ -5,6 +5,9 @@ import React, {useState} from "react";
 import './App.css'
 import Navbar from "./components/navbar";
 import TemperatureHistory from "./pages/TemperatureHistory";
+import { inject } from '@vercel/analytics';
+
+inject();
 
 function App() {
     const [title, setTitle] = useState("kritjo.com - Kristian Tjelta Johansen")
