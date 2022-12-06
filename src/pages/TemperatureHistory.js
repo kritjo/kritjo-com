@@ -5,8 +5,6 @@ import Select from "react-select";
 import qs from "qs";
 
 
-const CORS_PROXY = "https://cors-proxy-kritjo-com.herokuapp.com";
-
 const WeatherHistoryState = {
     loading_places: 0,
     loaded_places: 1,
@@ -32,73 +30,72 @@ const TemperatureHistory = (props) => {
 
     useEffect(() => {
         props.set_page_title("Weather history");
-    }, []);
+    }, [props]);
 
     // Handle loading weather state
     useEffect(() => {
         switch(state) {
             case WeatherHistoryState.loading_places:
-                const loadPlaces = async () => {
-                    setState(WeatherHistoryState.loading_places);
-
-                    const response = await axios.get(
-                        CORS_PROXY + "/https://frost.met.no/locations/v0.jsonld",
-                        {
-                            headers: {
-                                "Authorization": "Basic ZTM2N2M3NzAtYWI4Yy00ODVmLTliY2QtYTIyNWNhMTY2N2NmOg==",
-                            },
-                        },
-                    );
-                    setState(WeatherHistoryState.loaded_places);
-                    console.log(response.data);
-                    return response;
-                };
-                loadPlaces().then(value => {
-                    setPlaces(value.data.data.map((place) => {
-                        return {
-                            "label": `${place.name} (${place.geometry.coordinates[1]}, ${place.geometry.coordinates[0]})`,
-                            "value": place.geometry.coordinates,
-                        };
-                    }));
-                }).catch(reason => {
-                    console.log("Error" + reason);
-                });
+                if (places.length === 0) {
+                    const loadPlaces = async () => {
+                        setState(WeatherHistoryState.loading_places);
+                        const response = await axios.get(
+                            window.location.origin + "/api/places"
+                        );
+                        setState(WeatherHistoryState.loaded_places);
+                        return response;
+                    };
+                    loadPlaces().then(value => {
+                        setPlaces(value.data.data.map((place) => {
+                            return {
+                                "label": `${place.name} (${place.geometry.coordinates[1]}, ${place.geometry.coordinates[0]})`,
+                                "value": place.geometry.coordinates,
+                            };
+                        }));
+                    }).catch(reason => {
+                        setError(reason.response.data.reason);
+                        setState(WeatherHistoryState.error);
+                    });
+                }
                 break;
             case WeatherHistoryState.loaded_places:
                 break;
             case WeatherHistoryState.loading_weather:
-                console.log("Loading weather for " + chosenPlace.value);
-                const loadWeather = async () => {
-                    return await axios.get(
-                        window.location.origin + "/api/temperature_history/", {
-                            params: {
-                                coordinates: chosenPlace.value,
-                                year: chosenYear,
-                                temperature: chosenTemperature,
-                                temperature_type: chosenTemperatureType,
-                            },
-                            paramsSerializer: (params) => {
-                                return qs.stringify(params, {arrayFormat: "repeat"});
-                            }
-                        }
-                    )
-                };
-                loadWeather().then(value => {
-                    setDaysHistoric(value.data.days);
-                    setState(WeatherHistoryState.loaded_weather);
-                }).catch(reason => {
-                    setError(reason.response.data.reason);
-                    setState(WeatherHistoryState.error);
-                });
                 break;
             case WeatherHistoryState.loaded_weather:
                 break;
+            case WeatherHistoryState.error:
+                break;
+            default:
+                throw new Error("Unknown state");
         }
-    }, [state]);
+    }, [places.length, state]);
 
     const handleSubmit = (event) => {
         event.preventDefault();
         setState(WeatherHistoryState.loading_weather);
+        const loadWeather = async () => {
+            return await axios.get(
+                window.location.origin + "/api/temperature_history/", {
+                    params: {
+                        coordinates: chosenPlace.value,
+                        year: chosenYear,
+                        temperature: chosenTemperature,
+                        temperature_type: chosenTemperatureType,
+                    },
+                    paramsSerializer: (params) => {
+                        return qs.stringify(params, {arrayFormat: "repeat"});
+                    }
+                }
+            )
+        };
+        loadWeather().then(value => {
+            setDaysHistoric(value.data.days);
+            setState(WeatherHistoryState.loaded_weather);
+        }).catch(reason => {
+            setError(reason.response.data.reason);
+            setState(WeatherHistoryState.error);
+        });
     }
 
     return (
@@ -118,12 +115,12 @@ const TemperatureHistory = (props) => {
             <Form onSubmit={handleSubmit}>
                 <Select options={places} onChange={(value) => setChosenPlace(value)}
                         styles={{
-                            control: (provided, state) => ({
+                            control: (provided) => ({
                                 ...provided,
                                 boxShadow: "none",
                                 border: "none",
                             }),
-                            menu: (provided, state) => ({
+                            menu: (provided) => ({
                                 ...provided,
                                 border: "none",
                                 boxShadow: "none",
@@ -133,7 +130,6 @@ const TemperatureHistory = (props) => {
                                 backgroundColor: (state.isFocused) ? "lightgray" : "white",
                                 color: "black",
                             }),
-
                         }}
                 />
                 <InputGroup className={"mb-3"}
@@ -176,7 +172,13 @@ const TemperatureHistory = (props) => {
               <Alert key={"danger"} variant={"danger"}>
                   Error: {error}
               </Alert>
-              <Button variant={"primary"} onClick={() => setState(WeatherHistoryState.loading_places)}>
+              <Button variant={"primary"} onClick={() => {
+                    setChosenPlace("");
+                    setChosenYear(0);
+                    setChosenTemperature(0);
+                    setChosenTemperatureType(0);
+                    setState(WeatherHistoryState.loaded_places);
+              }}>
                   Reset
               </Button>
           </div>
