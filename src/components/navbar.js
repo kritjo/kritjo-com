@@ -36,9 +36,13 @@ function Navbar() {
                     </a>
                 </li>
                 <li>
-                    <a href={"mailto:hello@kritjo.com"}>
-                        hello@kritjo.com
-                    </a>
+                    <NavLink
+                        to="/contact"
+                        style={({ isActive }) =>
+                            isActive ? activeStyle : undefined
+                        }>
+                        kritjo@kritjo.com
+                    </NavLink>
                 </li>
             </ul>
         </nav>

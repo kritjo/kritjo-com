@@ -6,6 +6,7 @@ import './App.css'
 import Navbar from "./components/navbar";
 import TemperatureHistory from "./pages/TemperatureHistory";
 import { inject } from '@vercel/analytics';
+import Contact from "./pages/Contact";
 
 inject();
 
@@ -26,6 +27,9 @@ function App() {
                     } />
                     <Route path={'/weather'} element={
                         <TemperatureHistory set_page_title={setTitle} />
+                    } />
+                    <Route path={'/contact'} element={
+                        <Contact set_page_title={setTitle} />
                     } />
                     </Routes>
                 </header>
