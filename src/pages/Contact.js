@@ -10,8 +10,7 @@ const Contact = (props) => {
             <a href="mailto:kritjo@kritjo.com">kritjo@kritjo.com</a>
             <hr/>
             <h2>Signing and encryption (optional but recommended)</h2>
-            <p><b>Preferred</b>: Use my <a href="/kritjo@kritjo.com.cer">certificate</a> and S/MIME</p>
-            <p>Alternative: Use my <a href="/kritjo@kritjo.com.gpg">key</a> for GPG</p>
+            <p>Use my <a href="/kritjo@kritjo.com.cer">certificate</a> and S/MIME</p>
         </div>
     )
 }
