@@ -21,14 +21,9 @@ function Navbar() {
                     </NavLink>
                 </li>
                 <li>
-                    <NavLink
-                        to="/github"
-                        style={({ isActive }) =>
-                            isActive ? activeStyle : undefined
-                        }
-                    >
-                        Github
-                    </NavLink>
+                    <a target="_blank" rel="noreferrer noopener" href={"https://github.com/kritjo/"}>
+                        GitHub <i className="fa fa-external-link"></i>
+                    </a>
                 </li>
                 <li>
                     <a target="_blank" rel="noreferrer noopener" href={"https://www.linkedin.com/in/tjeltajohansen/"}>
@@ -36,13 +31,9 @@ function Navbar() {
                     </a>
                 </li>
                 <li>
-                    <NavLink
-                        to="/contact"
-                        style={({ isActive }) =>
-                            isActive ? activeStyle : undefined
-                        }>
-                        kritjo@kritjo.com
-                    </NavLink>
+                    <a target="_blank" rel="noreferrer noopener" href={"mailto:kritjo@kritjo.com"}>
+                        kritjo@kritjo.com <i className="fa fa-external-link"></i>
+                    </a>
                 </li>
             </ul>
         </nav>
